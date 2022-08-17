@@ -166,8 +166,8 @@ pub async fn tls_connect(
         #[cfg(feature = "use-native-tls")]
         TlsConfiguration::NativeSelfSigned(root) => {
             let connector: NativeTlsConnector = native_tls::TlsConnector::builder()
-                .danger_accept_invalid_certs(true)
-                .danger_accept_invalid_hostnames(true)
+                .danger_accept_invalid_certs(false)
+                .danger_accept_invalid_hostnames(false)
                 .add_root_certificate(root.clone())
                 .build()?
                 .into();
