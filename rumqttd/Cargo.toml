@@ -35,7 +35,7 @@ tokio = { version = "=1.20", features = ["full"] }
 warp = "0.3"
 
 # Optional
-tokio-native-tls = { version = "0.3", optional = true }
+tokio-native-tls = { path = "../../tls/tokio-native-tls", optional = true }
 tokio-rustls = { version = "0.23", optional = true }
 
 [dev-dependencies]

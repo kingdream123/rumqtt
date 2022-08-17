@@ -22,6 +22,11 @@ use std::io::{BufReader, Cursor};
 #[cfg(feature = "use-rustls")]
 use std::sync::Arc;
 
+#[cfg(all(
+    feature = "use-native-tls",
+    any(target_os = "macos", target_os = "ios")
+))]
+use native_tls::{HandshakeMode, SSLPinningMode};
 #[cfg(feature = "use-native-tls")]
 use tokio_native_tls::native_tls::Error as NativeTlsError;
 #[cfg(feature = "use-native-tls")]
@@ -165,12 +170,23 @@ pub async fn tls_connect(
         }
         #[cfg(feature = "use-native-tls")]
         TlsConfiguration::NativeSelfSigned(root) => {
+            #[cfg(not(any(target_os = "macos", target_os = "ios")))]
             let connector: NativeTlsConnector = native_tls::TlsConnector::builder()
                 .danger_accept_invalid_certs(false)
                 .danger_accept_invalid_hostnames(false)
-                .add_root_certificate(root.clone())
+                .set_root_certificate(root.clone())
                 .build()?
                 .into();
+            #[cfg(any(target_os = "macos", target_os = "ios"))]
+            let connector: NativeTlsConnector = native_tls::TlsConnector::builder()
+                .danger_accept_invalid_certs(false)
+                .danger_accept_invalid_hostnames(true)
+                .set_root_certificate(root.clone())
+                .set_handshake_mode(HandshakeMode::PinningMode)
+                .set_ssl_pinning_mode(SSLPinningMode::Certificate)
+                .build()?
+                .into();
+
             Box::new(connector.connect(addr, tcp).await?)
         }
         #[allow(unreachable_patterns)]

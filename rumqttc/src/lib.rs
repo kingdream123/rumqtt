@@ -301,7 +301,7 @@ pub enum TlsConfiguration {
     Rustls(Arc<ClientConfig>),
     #[cfg(feature = "use-native-tls")]
     /// Server-certificates are self signed
-    NativeSelfSigned(Certificate),
+    NativeSelfSigned(Vec<Certificate>),
 }
 
 #[cfg(feature = "use-rustls")]
