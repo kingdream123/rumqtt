@@ -179,7 +179,7 @@ pub async fn tls_connect(
                 .into();
             #[cfg(any(target_os = "macos", target_os = "ios"))]
             let connector: NativeTlsConnector = native_tls::TlsConnector::builder()
-                .danger_accept_invalid_certs(false)
+                .danger_accept_invalid_certs(true)
                 .danger_accept_invalid_hostnames(true)
                 .set_root_certificate(root.clone())
                 .set_handshake_mode(HandshakeMode::PinningMode)
